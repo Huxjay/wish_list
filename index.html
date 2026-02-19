@@ -1,0 +1,193 @@
+<!DOCTYPE html> 
+<html lang="en"> 
+<head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>Premium Wishlist MVP</title> 
+    <style> 
+        :root { 
+            --glass: rgba(255, 255, 255, 0.15); 
+            --glass-border: rgba(255, 255, 255, 0.25); 
+            --success: #4ade80; 
+            --danger: #fb7185; 
+        } 
+ 
+        body { 
+            margin: 0; 
+            min-height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            font-family: 'Segoe UI', Roboto, sans-serif; 
+            background: linear-gradient(-45deg, #6366f1, #a855f7, #ec4899); 
+            background-size: 400% 400%; 
+            animation: gradientMove 10s ease infinite; 
+            overflow-x: hidden; 
+        } 
+ 
+        @keyframes gradientMove { 
+            0% { background-position: 0% 50%; } 
+            50% { background-position: 100% 50%; } 
+            100% { background-position: 0% 50%; } 
+        } 
+ 
+        .glass-card { 
+            background: var(--glass); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            border: 1px solid var(--glass-border); 
+            border-radius: 24px; 
+            padding: 2rem; 
+            width: 90%; 
+            max-width: 400px; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); 
+            color: white; 
+        } 
+ 
+        h2 { text-align: center; margin-bottom: 1.5rem; font-weight: 300; letter-spacing: 2px; } 
+ 
+        .form { display: flex; flex-direction: column; gap: 12px; margin-bottom: 2rem; } 
+ 
+        input { 
+            background: rgba(255, 255, 255, 0.1); 
+            border: 1px solid var(--glass-border); 
+            padding: 14px; 
+            border-radius: 12px; 
+            color: white; 
+            font-size: 1rem; 
+            outline: none; 
+            transition: all 0.3s; 
+        } 
+ 
+        input:focus { background: rgba(255, 255, 255, 0.2); border-color: white; } 
+ 
+        .add-btn { 
+            background: white; 
+            color: #a855f7; 
+            padding: 14px; 
+            border-radius: 12px; 
+            border: none; 
+            font-weight: 700; 
+            cursor: pointer; 
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2); 
+        } 
+ 
+        .add-btn:active { transform: scale(0.9); } 
+ 
+        /* MAGIC SPARKLE CLASS */ 
+        .sparkle-effect { background: #4ade80 !important; color: white !important; } 
+ 
+        ul { list-style: none; padding: 0; margin: 0; } 
+ 
+        li { 
+            background: rgba(255, 255, 255, 0.1); 
+            border: 1px solid var(--glass-border); 
+            margin-bottom: 12px; 
+            padding: 15px; 
+            border-radius: 16px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            animation: fadeIn 0.4s ease-out forwards; 
+        } 
+ 
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: scale(0.9); } 
+            to { opacity: 1; transform: scale(1); } 
+        } 
+ 
+        .item-text { display: flex; flex-direction: column; } 
+        .item-name { font-weight: 600; font-size: 1.1rem; } 
+        .item-price { font-size: 0.85rem; opacity: 0.7; } 
+ 
+        .btns { display: flex; gap: 10px; } 
+        .icon-btn {  
+            border: none;  
+            border-radius: 8px;  
+            padding: 8px 12px;  
+            cursor: pointer;  
+            color: white; 
+            font-size: 0.8rem; 
+            transition: 0.2s; 
+        } 
+        .buy-btn { background: var(--success); } 
+        .del-btn { background: var(--danger); } 
+ 
+        .completed { opacity: 0.5; filter: grayscale(1); } 
+        .completed .item-name { text-decoration: line-through; } 
+    </style> 
+</head> 
+<body> 
+ 
+<div class="glass-card"> 
+    <h2>✨WISHLIST</h2> 
+     
+    <div class="form"> 
+        <input type="text" id="itemName" placeholder="What's the dream?"> 
+        <input type="number" id="itemPrice" placeholder="Price ($)"> 
+        <button class="add-btn" id="mainAddBtn">ADD TO WISHLIST</button> 
+    </div> 
+ 
+    <ul id="wishlistContainer"></ul> 
+</div> 
+ 
+<script> 
+    const addBtn = document.getElementById('mainAddBtn'); 
+    const nameInput = document.getElementById('itemName'); 
+    const priceInput = document.getElementById('itemPrice'); 
+    const list = document.getElementById('wishlistContainer'); 
+ 
+    addBtn.addEventListener('click', function() { 
+        const name = nameInput.value.trim(); 
+        const price = priceInput.value.trim(); 
+ 
+        if (name === "" || price === "") { 
+            alert("Please fill in both fields!"); 
+            return; 
+        } 
+ 
+        // 1. Add Magic Magic Visual Feedback 
+        addBtn.classList.add('sparkle-effect'); 
+        addBtn.innerText = "ADDED!✨"; 
+         
+        // 2. Create the Element 
+        const li = document.createElement('li'); 
+        li.innerHTML = ` 
+            <div class="item-text"> 
+                <span class="item-name">${name}</span> 
+                <span class="item-price">$${price}</span> 
+            </div> 
+            <div class="btns"> 
+                <button class="icon-btn buy-btn">Bought</button> 
+                <button class="icon-btn del-btn">Delete</button> 
+            </div> 
+        `; 
+ 
+        // 3. Add Functionality to the buttons inside the new LI 
+        li.querySelector('.buy-btn').addEventListener('click', function() { 
+            li.classList.toggle('completed'); 
+            this.innerText = li.classList.contains('completed') ? "Undo" : "Bought"; 
+        }); 
+ 
+        li.querySelector('.del-btn').addEventListener('click', function() { 
+            li.style.transform = "translateX(50px)"; 
+            li.style.opacity = "0"; 
+            setTimeout(() => li.remove(), 300); 
+        }); 
+ 
+        // 4. Push to list 
+        list.prepend(li); 
+ 
+        // 5. Reset Form 
+        nameInput.value = ""; 
+        priceInput.value = ""; 
+        setTimeout(() => { 
+            addBtn.classList.remove('sparkle-effect'); 
+            addBtn.innerText = "ADD TO WISHLIST"; 
+        }, 600); 
+    }); 
+</script> 
+ 
+</body> 
+</html> 
